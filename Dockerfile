@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     librabbitmq-dev \
     zip \
     unzip \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip sockets \
     && docker-php-ext-install opcache \
     && pecl install amqp \
     && docker-php-ext-enable amqp opcache \
