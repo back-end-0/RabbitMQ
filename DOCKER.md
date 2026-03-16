@@ -344,3 +344,92 @@ docker compose down -v
 ├── .env                        # إعدادات البيئة (لا ترفعه لـ git)
 └── .env.example                # نموذج الإعدادات
 ```
+
+
+-------------------------------------------------------------------------------------
+# Cherry-Pick Commit to Develop Branch
+
+## الهدف
+نقل كوميت معين (`e1536b99`) من branch ثاني إلى `develop` عن طريق إنشاء branch جديد و Pull Request.
+
+---
+
+## الخطوات
+
+### 1. التأكد من الكوميت
+```bash
+git log --oneline -1 e1536b994aeabdee65c838146e4b2e398194dc28
+```
+> يعرض تفاصيل الكوميت للتأكد إنه الصحيح
+
+**النتيجة:**
+```
+e1536b994 fix: reduce app container CPU/memory limits to match 8-core server
+```
+
+---
+
+### 2. التبديل إلى develop وتحديثه
+```bash
+git checkout develop
+git pull origin develop
+```
+> ننتقل لـ develop ونسحب آخر التحديثات من السيرفر
+
+---
+
+### 3. إنشاء branch جديد من develop
+```bash
+git checkout -b fix/reduce-cpu-memory-limits develop
+```
+> ننشئ branch جديد اسمه `fix/reduce-cpu-memory-limits` مبني على `develop`
+
+---
+
+### 4. نقل الكوميت (Cherry-Pick)
+```bash
+git cherry-pick e1536b994aeabdee65c838146e4b2e398194dc28
+```
+> ينسخ الكوميت المحدد ويطبقه على الـ branch الجديد
+
+---
+
+### 5. رفع الـ branch للسيرفر
+```bash
+git push -u origin fix/reduce-cpu-memory-limits
+```
+> يرفع الـ branch الجديد على GitHub ويربطه بالريموت
+
+---
+
+### 6. إنشاء Pull Request
+```bash
+gh pr create --base develop \
+  --title "fix: reduce app container CPU/memory limits to match 8-core server" \
+  --body "## Summary
+- Reduce app container CPU/memory limits to match 8-core server configuration
+
+## Test plan
+- [ ] Verify container starts successfully with new resource limits
+- [ ] Confirm resource usage stays within updated bounds"
+```
+> ينشئ Pull Request يستهدف branch الـ `develop`
+
+**أو من المتصفح:**
+```
+https://github.com/Almusanid-co/matryal-back/pull/new/fix/reduce-cpu-memory-limits
+```
+> تأكد تختار **develop** كـ base branch
+
+---
+
+## ملخص سريع
+
+| الخطوة | الأمر | الوصف |
+|--------|-------|-------|
+| 1 | `git log` | التأكد من الكوميت |
+| 2 | `git checkout develop && git pull` | تحديث develop |
+| 3 | `git checkout -b fix/...` | إنشاء branch جديد |
+| 4 | `git cherry-pick <hash>` | نقل الكوميت |
+| 5 | `git push -u origin fix/...` | رفع الـ branch |
+| 6 | `gh pr create` | إنشاء Pull Request |
