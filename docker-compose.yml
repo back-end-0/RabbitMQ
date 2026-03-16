@@ -72,6 +72,29 @@ services:
       - "15672:15672"  # Management UI
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+
+  security-consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_security_consumer
+    restart: unless-stopped
+    working_dir: /var/www
+    command: php artisan security:consume
+    volumes:
+      - storage_data:/var/www/storage
+    depends_on:
+      mysql:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     networks:
       - app_network
 

@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker exec laravel_app php artisan test --compact)"
+    ]
+  }
+}
